@@ -1,0 +1,14 @@
+# Build output
+/target
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Runtime config
+clickplay.cfg
+
+# Binaries (only ignore in root, not release output)
+/*.exe
+/*.pdb

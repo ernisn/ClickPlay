@@ -1,0 +1,25 @@
+[package]
+name = "clickplay"
+version = "1.0.0"
+edition = "2021"
+authors = ["ClickPlay"]
+description = "Minimal tray media control for Windows"
+
+[dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Shell",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Registry",
+    "Win32_Graphics_Gdi",
+    "Media_Control",
+] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
