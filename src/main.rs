@@ -558,15 +558,15 @@ unsafe fn create_default_icon() -> HICON {
     let (r, g, b) = get_icon_colors();
     
     // Music note head
-    draw_filled_circle(&mut pixels, 10.0, 22.0, 6.0, r, g, b);
+    draw_filled_circle(&mut pixels, 10.0, 23.0, 7.0, r, g, b);
     
     // Note stem
-    draw_rounded_rect(&mut pixels, 14.0, 5.0, 18.0, 21.0, 2.0, r, g, b);
+    draw_rounded_rect(&mut pixels, 13.0, 5.0, 17.0, 23.0, 2.0, r, g, b);
     
     // Note flag
-    draw_rounded_rect(&mut pixels, 18.0, 5.0, 26.0, 9.0, 4.0, r, g, b);
-    draw_rounded_rect(&mut pixels, 23.0, 8.0, 27.0, 13.0, 2.0, r, g, b);
-    draw_rounded_rect(&mut pixels, 21.0, 12.0, 25.0, 16.0, 2.0, r, g, b);
+    draw_rounded_rect(&mut pixels, 14.0, 5.0, 25.0, 8.0, 2.0, r, g, b);
+    draw_rounded_rect(&mut pixels, 22.0, 7.5, 24.5, 13.0, 1.5, r, g, b);
+    draw_rounded_rect(&mut pixels, 21.0, 12.0, 23.0, 16.0, 1.0, r, g, b);
 
     create_icon_from_pixels(&pixels)
 }

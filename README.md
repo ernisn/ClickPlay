@@ -9,17 +9,18 @@ Control music with one click in Windows taskbar/tray icon area.
 
 ## Usage
 
-1. Build or download from Release page
+1. Download from [Release](https://github.com/ernisn/ClickPlay/releases/) page or build yourself
 2. Run `clickplay.exe` and left/right click default icon to open menu
 3. Check the control buttons you want to display
 4. Left-click icons to perform corresponding actions. Right-click any icon to modify settings
+5. Drag each icon to order/hide
 
-#### Auto-Start (Optional)
+## Auto-Start (Optional)
 
 1. Press `Win + R`, type `shell:startup`, press Enter
 2. Create a shortcut to `clickplay.exe` in the opened folder 
 
-## Menu Options
+## Menu & Configuration
 
 | Option          | Description                             |
 | --------------- | --------------------------------------- |
@@ -27,8 +28,6 @@ Control music with one click in Windows taskbar/tray icon area.
 | Show Play/Pause | Display the play/pause control icon     |
 | Show Next       | Display the next track control icon     |
 | Exit            | Exit the program                        |
-
-## Configuration
 
 Default Configuration - `\clickplay.cfg`:
 
