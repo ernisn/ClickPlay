@@ -1,10 +1,11 @@
 # ClickPlay
 
-Control music with one click in Windows taskbar/tray icon area.
+Control music with one click in Windows taskbar/tray/notification icon area.
 
 ## Features
 
-- Portable & Low Resource Usage & No UI
+- Portable & No UI
+- Auto Detect Media Status
 - Auto Light/Dark Theme
 
 ## Usage
@@ -13,7 +14,7 @@ Control music with one click in Windows taskbar/tray icon area.
 2. Run `clickplay.exe` and left/right click default icon to open menu
 3. Check the control buttons you want to display
 4. Left-click icons to perform corresponding actions. Right-click any icon to modify settings
-5. Drag each icon to order/hide
+5. Drag each icon to re-order or hide to the hidden icon area
 
 ## Auto-Start (Optional)
 
