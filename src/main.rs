@@ -29,9 +29,10 @@ use windows::Media::Control::{
     GlobalSystemMediaTransportControlsSessionPlaybackStatus,
 };
 
+static mut MEDIA_MANAGER: Option<GlobalSystemMediaTransportControlsSessionManager> = None;
+
 const WM_TRAYICON: u32 = WM_USER + 1;
 const TIMER_ID_PLAYBACK: usize = 1;
-const TIMER_ID_THEME: usize = 2;
 
 const ICON_ID_DEFAULT: u32 = 1;
 const ICON_ID_PREV: u32 = 2;
@@ -61,6 +62,7 @@ static mut MAIN_HWND: HWND = HWND(null_mut());
 static mut H_MODULE: HMODULE = HMODULE(null_mut());
 static mut IS_PLAYING: bool = false;
 static mut LAST_THEME_DARK: bool = true;
+static mut THEME_CHECK_COUNTER: u32 = 0;
 
 fn main() {
     unsafe {
@@ -94,11 +96,14 @@ fn main() {
             None,
         ).unwrap_or(HWND(null_mut()));
 
+        // Initialize media session manager once
+        MEDIA_MANAGER = init_media_manager();
+
         IS_PLAYING = check_media_playing();
         update_tray_icons();
 
+        // Single timer at 500ms handles both playback and theme checks
         SetTimer(MAIN_HWND, TIMER_ID_PLAYBACK, 500, None);
-        SetTimer(MAIN_HWND, TIMER_ID_THEME, 2000, None);
 
         let mut msg: MSG = zeroed();
         while GetMessageW(&mut msg, None, 0, 0).as_bool() {
@@ -107,7 +112,7 @@ fn main() {
         }
 
         let _ = KillTimer(MAIN_HWND, TIMER_ID_PLAYBACK);
-        let _ = KillTimer(MAIN_HWND, TIMER_ID_THEME);
+        MEDIA_MANAGER = None;
         remove_all_icons();
     }
 }
@@ -122,6 +127,7 @@ unsafe extern "system" fn window_proc(
         WM_TIMER => {
             let timer_id = wparam.0;
             if timer_id == TIMER_ID_PLAYBACK {
+                // Check playback state every tick (500ms)
                 let playing = check_media_playing();
                 if playing != IS_PLAYING {
                     IS_PLAYING = playing;
@@ -129,13 +135,18 @@ unsafe extern "system" fn window_proc(
                         update_play_icon_only();
                     }
                 }
-            } else if timer_id == TIMER_ID_THEME {
-                let system_dark = !is_system_light_theme();
-                if system_dark != LAST_THEME_DARK {
-                    LAST_THEME_DARK = system_dark;
-                    APP_SETTINGS.dark_icons = !system_dark;
-                    update_tray_icons();
-                    save_settings();
+
+                // Check theme every ~4th tick (~2s)
+                THEME_CHECK_COUNTER += 1;
+                if THEME_CHECK_COUNTER >= 4 {
+                    THEME_CHECK_COUNTER = 0;
+                    let system_dark = !is_system_light_theme();
+                    if system_dark != LAST_THEME_DARK {
+                        LAST_THEME_DARK = system_dark;
+                        APP_SETTINGS.dark_icons = !system_dark;
+                        update_tray_icons();
+                        save_settings();
+                    }
                 }
             }
             LRESULT(0)
@@ -620,9 +631,15 @@ unsafe fn create_next_icon() -> HICON {
 
 // ============== Media State Detection ==============
 
+fn init_media_manager() -> Option<GlobalSystemMediaTransportControlsSessionManager> {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync()
+        .ok()
+        .and_then(|op| op.get().ok())
+}
+
 fn check_media_playing() -> bool {
-    if let Ok(operation) = GlobalSystemMediaTransportControlsSessionManager::RequestAsync() {
-        if let Ok(manager) = operation.get() {
+    unsafe {
+        if let Some(ref manager) = MEDIA_MANAGER {
             if let Ok(session) = manager.GetCurrentSession() {
                 if let Ok(info) = session.GetPlaybackInfo() {
                     if let Ok(status) = info.PlaybackStatus() {
